@@ -21,6 +21,9 @@ pip install pyjwt
 sudo apt install nginx
 ```
 ```
+sudo dpkg-reconfigure tzdata
+```
+```
 sudo nano /etc/nginx/sites-available/api.apidowhats.com.br.conf
 ```
 ```
