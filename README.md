@@ -8,8 +8,14 @@ sudo apt update
 ```
 sudo apt upgrade
 ```
+
+O Python já deve estar pré-instalado no Ubuntu. Verifique a versão do Python que está instalada usando o seguinte comando:
 ```
 python3 --version
+```
+Se o Python não estiver instalado ou se você desejar instalar uma versão específica, você pode usar o gerenciador de pacotes apt para instalar o Python. O Python 3 é geralmente instalado por padrão. Para instalar o Python 3, execute o seguinte com
+```
+sudo apt install python3
 ```
 ```
 sudo apt install python3-pip
