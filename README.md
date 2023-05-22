@@ -71,6 +71,20 @@ Reinicie o Nginx para aplicar as alterações:
 sudo systemctl restart nginx
 ```
 
+Entre na pasta onde armazerará o projeto, por exemplo: /home
+```
+cd /home
+```
+Faça o clone do projeto de api
+```
+git clone https://github.com/ricardoimanishi/apy-python.git app_name
+```
+Inicie o app
+```
+python3 app.py
+```
+
+
 Dicas Opcionais
 
 Alterar o fuso horario do servidor:
