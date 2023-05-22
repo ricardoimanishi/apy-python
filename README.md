@@ -17,28 +17,34 @@ Se o Python não estiver instalado ou se você desejar instalar uma versão espe
 ```
 sudo apt install python3
 ```
+Em seguida, instale o pacote python3-pip executando o seguinte comando:
 ```
 sudo apt install python3-pip
 ```
+Após a instalação ser concluída, você poderá usar o pip para instalar pacotes Python. Por exemplo, para instalar o Flask, execute o seguinte comando:
 ```
 pip3 install flask
 ```
+Você pode usar a biblioteca PyJWT para gerar e verificar tokens JWT. Execute o seguinte comando para instalar a biblioteca via pip:
 ```
 pip install pyjwt
 ```
+
+# Para instalar HTTPS com Nginx
+Para instalar HTTPS em um servidor Python, você precisará configurar um servidor web adequado, como o Nginx ou o Apache, como um proxy reverso para o seu aplicativo Python. Aqui está um passo a passo básico usando o Nginx como exemplo:
 ```
 sudo apt install nginx
 ```
+Crie um arquivo de configuração do servidor Nginx:
+Crie um novo arquivo de configuração para o seu domínio. Por exemplo:
 ```
-sudo dpkg-reconfigure tzdata
+sudo nano /etc/nginx/sites-available/seu_dominio.com.br.conf
 ```
-```
-sudo nano /etc/nginx/sites-available/api.apidowhats.com.br.conf
-```
+Dentro do arquivo de configuração, adicione o seguinte conteúdo, substituindo seu_dominio pelo seu domínio real e caminho_para_seu_app pelo caminho absoluto para o seu aplicativo Python:
 ```
 server {
     listen 80;
-    server_name api.apidowhats.com.br www.api.apidowhats.com.br;
+    server_name seu_dominio.com.br www.seu_dominio.com.br;
     
     location / {
         proxy_pass http://localhost:8000;  # Substitua a porta pelo número da porta em que seu aplicativo Python está sendo executado
@@ -47,15 +53,27 @@ server {
     }
 }
 ```
+Habilite o arquivo de configuração do Nginx:
+Crie um link simbólico para o arquivo de configuração no diretório sites-enabled:
 ```
-sudo ln -s /etc/nginx/sites-available/api.apidowhats.com.br.conf /etc/nginx/sites-enabled/
+sudo ln -s /etc/nginx/sites-available/seu_dominio.com.br.conf /etc/nginx/sites-enabled/
 ```
+Verifique a configuração do Nginx:
 ```
 sudo nginx -t
 ```
+Utilize o Certbot com o Nginx para obter um certificado SSL e configurar redirecionamento **seu dominio já deve estar apontado para o ip do servidor
 ```
-sudo certbot --nginx --agree-tos --redirect --hsts --staple-ocsp --email ricardoimanishi@gmail.com -d api.apidowhats.com.br
+sudo certbot --nginx --agree-tos --redirect --hsts --staple-ocsp --email seuemail@gmail.com -d seu_dominio.com.br
 ```
+Reinicie o Nginx para aplicar as alterações:
 ```
 sudo systemctl restart nginx
+```
+
+Dicas Opcionais
+
+Alterar o fuso horario do servidor:
+```
+sudo dpkg-reconfigure tzdata
 ```
