@@ -9,6 +9,7 @@ pip install pyjwt
 sudo apt install nginx
 sudo nano /etc/nginx/sites-available/api.apidowhats.com.br.conf
 
+```
 server {
     listen 80;
     server_name api.apidowhats.com.br www.api.apidowhats.com.br;
@@ -19,6 +20,7 @@ server {
         proxy_set_header X-Real-IP $remote_addr;
     }
 }
+```
 
 sudo ln -s /etc/nginx/sites-available/api.apidowhats.com.br.conf /etc/nginx/sites-enabled/
 sudo nginx -t
