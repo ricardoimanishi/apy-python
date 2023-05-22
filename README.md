@@ -1,7 +1,9 @@
 # Instalação da API no Ubuntu
 
 sudo apt update
+
 sudo apt upgrade
+
 python3 --version
 sudo apt install python3-pip
 pip3 install flask
