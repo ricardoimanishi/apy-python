@@ -12,7 +12,6 @@ sudo nano /etc/nginx/sites-available/api.apidowhats.com.br.conf
 server {
     listen 80;
     server_name api.apidowhats.com.br www.api.apidowhats.com.br;
-
     location / {
         proxy_pass http://localhost:8000;  # Substitua a porta pelo número da porta em que seu aplicativo Python está sendo executado
         proxy_set_header Host $host;
