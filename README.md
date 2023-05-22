@@ -1,4 +1,7 @@
 # Instalação da API no Ubuntu
+
+Abra um terminal no seu sistema Ubuntu.
+Verifique se o sistema está atualizado executando os seguintes comandos:
 ```
 sudo apt update
 ```
