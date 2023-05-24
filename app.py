@@ -1,95 +1,86 @@
 from flask import Flask, request, jsonify
-from database import get_db_connection
-from functools import wraps
 import jwt
-from datetime import datetime, timedelta
+from controllers.authentication import Authentication
+from controllers.token_required import TokenRequired
+from controllers.user import User
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'sua_chave_secreta111'
 
-def token_required(f):
-    @wraps(f)
-    def decorated(*args, **kwargs):
-        token = None
-
-        if 'Authorization' in request.headers:
-            token = request.headers['Authorization'].split()[1]
-
-        if not token:
-            return jsonify({'message': 'Token de autenticação não fornecido'}), 401
-
-        try:
-            data = jwt.decode(token, app.config['SECRET_KEY'], algorithms=["HS256"])
-            current_user = data['username']
-
-            # Verifica a ativação do usuário no banco de dados
-            connection = get_db_connection()
-            cursor = connection.cursor()
-            query = "SELECT * FROM users WHERE username = %s AND status = 1"
-            cursor.execute(query, (current_user,))
-            result = cursor.fetchone()
-            cursor.close()
-            connection.close()
-
-            if not result:
-                return jsonify({'message': 'Usuário inativo'}), 401
-
-        except jwt.ExpiredSignatureError:
-            return jsonify({'message': 'Token expirado'}), 401
-        except jwt.InvalidTokenError:
-            return jsonify({'message': 'Token inválido'}), 401
-
-        return f(current_user, *args, **kwargs)
-
-    return decorated
-
+token_required = TokenRequired(app)
 
 @app.route('/api/login', methods=['POST'])
 def login():
+    # Obtém o nome de usuário e senha do corpo da requisição
     username = request.json.get('username')
     password = request.json.get('password')
+    # Chama o método para autenticar o usuário
+    return Authentication.authenticate_user(username, password, app)
 
-    # Obtém a conexão com o banco de dados
-    connection = get_db_connection()
-
-    # Executa uma consulta para verificar as credenciais do usuário
-    cursor = connection.cursor()
-    query = "SELECT id, username FROM users WHERE username = %s AND password = %s"
-    cursor.execute(query, (username, password))
-    result = cursor.fetchone()
-
-    if result:
-        user_id = result[0]
-        username = result[1]
-        
-        # Credenciais válidas, gera um token JWT, válido indefinidamente
-        token = jwt.encode({'id': user_id, 'username': username}, app.config['SECRET_KEY'], algorithm='HS256')
-
-        # Credenciais válidas, gera um token JWT com validade de 1 hora
-        # expiration_time = datetime.utcnow() + timedelta(hours=1)
-        # token = jwt.encode({'id': user_id, 'username': username, 'exp': expiration_time}, app.config['SECRET_KEY'], algorithm='HS256')
-
-        return jsonify({'token': token})
-
-    return jsonify({'message': 'Credenciais inválidas'}), 401
-
-
-@app.route('/api/protegido')
+@app.route('/api/users_create', methods=['POST'])
 @token_required
-def protegido(current_user):
-    # Obtém a conexão com o banco de dados
-    connection = get_db_connection()
+def create_user(current_user):
+    try:
+        # Obtém os dados do usuário do corpo da requisição
+        username = request.json.get('username')
+        password = request.json.get('password')
+        status = request.json.get('status')
 
-    # Executa uma consulta no banco de dados
-    cursor = connection.cursor()
-    cursor.execute("SELECT * FROM users")
+        # Verifica se o nome de usuário e senha estão presentes
+        if not username or not password:
+            return jsonify({'message': 'Nome de usuário e senha são obrigatórios'}), 400
 
-    # Obtém os resultados da consulta
-    results = cursor.fetchall()
+        # Cria um novo usuário chamando o método 'create' da classe 'User'
+        user = User.create(username, password, status)
 
-    # Processa os resultados, por exemplo, retornando-os como resposta JSON
-    users = [{'id': row[0], 'username': row[1]} for row in results]
-    return jsonify(users)
+        # Prepara os dados do usuário para retornar como resposta JSON
+        user_data = {
+            'id': user.id,
+            'username': user.username,
+            'password': user.password,
+            'status': user.status,
+        }
+
+        return jsonify(user_data), 201
+    except Exception as e:
+        return jsonify({'message': 'Erro ao criar usuário', 'error': str(e)}), 500
+
+@app.route('/api/users/<int:user_id>', methods=['GET'])
+@token_required
+def get_user_by_id(current_user, user_id):
+    try:
+        # Cria uma instância da classe 'User'
+        user = User()
+        # Obtém os dados do usuário pelo ID
+        user_data = user.get_by_id(user_id)
+
+        if user_data:
+            # Retorna os dados do usuário como resposta JSON
+            return jsonify(user_data.__dict__)
+        else:
+            return jsonify({'message': 'Usuário não encontrado'}), 404
+    except Exception as e:
+        return jsonify({'message': 'Erro ao obter usuário', 'error': str(e)}), 500
+
+    
+@app.route('/api/users/<string:user_name>', methods=['GET'])
+@token_required
+def get_by_username(current_user, user_name):
+    try:
+        # Instancia a classe User
+        user = User()
+
+        # Obtém o usuário pelo nome de usuário
+        user_data = user.get_by_username(user_name)
+
+        if user_data:
+            # Retorna os dados do usuário como resposta JSON
+            return jsonify(user_data.__dict__)
+        else:
+            return jsonify({'message': 'Usuário não encontrado'}), 404
+
+    except Exception as e:
+        return jsonify({'message': 'Erro ao obter usuário', 'error': str(e)}), 500
 
 @app.route('/api/get_user_from_token', methods=['POST'])
 @token_required
@@ -98,6 +89,7 @@ def get_user_from_token(current_user):
     secret_key = request.json.get('secret_key')
     
     try:
+        # Decodifica o token usando a chave secreta
         payload = jwt.decode(token, secret_key, algorithms=["HS256"])
         user_id = payload.get('id')
         username = payload.get('username')
@@ -116,4 +108,5 @@ def get_user_from_token(current_user):
         return jsonify({'message': 'Token inválido'}), 401
 
 if __name__ == '__main__':
+    # Executa a aplicação Flask
     app.run(host='0.0.0.0', port=8000, debug=True)
