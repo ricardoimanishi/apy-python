@@ -29,7 +29,12 @@ Você pode usar a biblioteca PyJWT para gerar e verificar tokens JWT. Execute o 
 ```
 pip install pyjwt
 ```
-
+```
+pip3 install Flask
+```
+```
+pip3 install mysql-connector-python
+```
 # Para instalar HTTPS com Nginx
 Para instalar HTTPS em um servidor Python, você precisará configurar um servidor web adequado, como o Nginx ou o Apache, como um proxy reverso para o seu aplicativo Python. Aqui está um passo a passo básico usando o Nginx como exemplo:
 ```
