@@ -64,6 +64,12 @@ sudo nginx -t
 ```
 Utilize o Certbot com o Nginx para obter um certificado SSL e configurar redirecionamento **seu dominio já deve estar apontado para o ip do servidor
 ```
+sudo apt install certbot
+```
+```
+sudo apt-get install python3-certbot-nginx
+```
+```
 sudo certbot --nginx --agree-tos --redirect --hsts --staple-ocsp --email seuemail@gmail.com -d seu_dominio.com.br
 ```
 Reinicie o Nginx para aplicar as alterações:
