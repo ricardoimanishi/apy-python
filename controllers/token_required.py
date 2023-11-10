@@ -25,7 +25,7 @@ class TokenRequired:
                 # Verifica a ativação do usuário no banco de dados
                 connection = get_db_connection()
                 cursor = connection.cursor()
-                query = "SELECT * FROM users WHERE username = %s AND status = 1"
+                query = "SELECT * FROM usuarios WHERE username = %s AND status = 1"
                 cursor.execute(query, (current_user,))
                 result = cursor.fetchone()
                 cursor.close()

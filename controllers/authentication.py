@@ -7,12 +7,12 @@ class Authentication:
     @staticmethod
     def authenticate_user(username, password, app):
 
-        # Obtém a conexão com o banco de dados
+        # ObtÃ©m a conexÃ£o com o banco de dados
         connection = get_db_connection()
 
-        # Executa uma consulta para verificar as credenciais do usuário
+        # Executa uma consulta para verificar as credenciais do usuÃ¡rio
         cursor = connection.cursor()
-        query = "SELECT id, username FROM users WHERE username = %s AND password = %s"
+        query = "SELECT id, username FROM usuarios WHERE username = %s AND password = %s"
         cursor.execute(query, (username, password))
         result = cursor.fetchone()
 
@@ -20,10 +20,10 @@ class Authentication:
             user_id = result[0]
             username = result[1]
             
-            # Credenciais válidas, gera um token JWT, válido indefinidamente
+            # Credenciais vÃ¡lidas, gera um token JWT, vÃ¡lido indefinidamente
             token = jwt.encode({'id': user_id, 'username': username}, app.config['SECRET_KEY'], algorithm='HS256')
 
-            # Credenciais válidas, gera um token JWT com validade de 1 hora
+            # Credenciais vÃ¡lidas, gera um token JWT com validade de 1 hora
             # expiration_time = datetime.utcnow() + timedelta(hours=1)
             # token = jwt.encode({'id': user_id, 'username': username, 'exp': expiration_time}, app.config['SECRET_KEY'], algorithm='HS256')
 

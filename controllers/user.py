@@ -34,7 +34,7 @@ class User:
             
         connection = get_db_connection()
         cursor = connection.cursor()
-        query = "INSERT INTO users (username, password, status) VALUES (%s, %s, %s)"
+        query = "INSERT INTO usuarios (username, password, status) VALUES (%s, %s, %s)"
         cursor.execute(query, (username, password, status))
         connection.commit()
         user_id = cursor.lastrowid
@@ -55,7 +55,7 @@ class User:
         """
         connection = get_db_connection()
         cursor = connection.cursor()
-        query = "SELECT id, username, password, status, created_at, updated_at FROM users WHERE id = %s"
+        query = "SELECT id, username, password, status, created_at, updated_at FROM usuarios WHERE id = %s"
         cursor.execute(query, (user_id,))
         result = cursor.fetchone()
         cursor.close()
@@ -77,7 +77,7 @@ class User:
         """
         connection = get_db_connection()
         cursor = connection.cursor()
-        query = "SELECT id, username, password, status, created_at, updated_at FROM users WHERE username = %s"
+        query = "SELECT id, username, password, status, created_at, updated_at FROM usuarios WHERE username = %s"
         cursor.execute(query, (username,))
         result = cursor.fetchone()
         cursor.close()
@@ -92,7 +92,7 @@ class User:
         """
         connection = get_db_connection()
         cursor = connection.cursor()
-        query = "UPDATE users SET username = %s, password = %s, status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s"
+        query = "UPDATE usuarios SET username = %s, password = %s, status = %s, updated_at = CURRENT_TIMESTAMP WHERE id = %s"
         cursor.execute(query, (self.username, self.password, self.status, self.id))
         connection.commit()
         cursor.close()
@@ -104,7 +104,7 @@ class User:
         """
         connection = get_db_connection()
         cursor = connection.cursor()
-        query = "DELETE FROM users WHERE id = %s"
+        query = "DELETE FROM usuarios WHERE id = %s"
         cursor.execute(query, (self.id,))
         connection.commit()
         cursor.close()

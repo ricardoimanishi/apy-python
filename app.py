@@ -3,11 +3,21 @@ import jwt
 from controllers.authentication import Authentication
 from controllers.token_required import TokenRequired
 from controllers.user import User
+from datetime import datetime
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'sua_chave_secreta111'
+
+data_atual = datetime.now()
+chave = data_atual.strftime('%Y-%m-%d')
+
+app.config['SECRET_KEY'] = chave
 
 token_required = TokenRequired(app)
+
+# Rota de exemplo
+@app.route('/api/hello', methods=['GET'])
+def hello():
+    return jsonify({'message': 'Hello, World!'})
 
 @app.route('/api/login', methods=['POST'])
 def login():
